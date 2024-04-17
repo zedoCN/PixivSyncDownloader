@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" href="/favicon.ico"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pixiv 数据库搜索</title>
+</head>
+<body>
+<div id="app" class="container">
+    <div class="container py-4 px-3 mx-auto">
+        <h1>Pixiv Database Searcher</h1>
+    </div>
+    <div class="container py-4 px-3 mx-auto">
+        <div class="row mb-3">
+            <div class="col-auto">
+                <span class="badge text-bg-secondary p-2 m-1">{{ navigation.counts }} 张插画</span>
+            </div>
+            <div class="col-auto btn-group ms-auto" role="group" aria-label="Second group">
+                <button v-for="item in navigation.items" type="button"
+                        :class="{ 'btn-primary': navigation.select===item.id , 'btn-secondary': navigation.select!==item.id }"
+                        class="btn"
+                        @click="navigation.select=item.id;search()">
+                    {{ item.id }}
+                </button>
+            </div>
+            <div class="col-auto ms-auto">
+                <a href="/" type="button" class="btn btn-outline-success float-start">
+                    主页
+                </a>
+            </div>
+        </div>
+        <div class="input-group row">
+            <div class="col-auto">
+                <select class="form-select" v-model="searchType">
+                    <option v-for="key in searchTypes.keys()"
+                            :value="key">
+                        {{ searchTypes.get(key) }}
+                    </option>
+                </select>
+            </div>
+            <input type="text" class="form-control col-auto" v-model="searchValue">
+            <button type="submit" class="btn btn-outline-secondary col-auto" @click="navigation.select = 1;search()">搜索
+            </button>
+        </div>
+    </div>
+    <div class="container py-4 px-3 mx-auto card">
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 " v-for="item in showIllusts">
+                <img :src="item.url" style="max-width: 100%; max-height: 200px; height: 200px; object-fit: contain;"
+                     class="img-thumbnail bd-placeholder-img card-img-top d-block" alt="">
+
+                <div class="card-body d-flex flex-column">
+                    <p class="card-text">{{ item.title }}</p>
+                    <div class="card-text mt-auto">
+                        <small class="badge text-bg-secondary m-1" v-for="item in item.tags">{{ item }}</small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <small class="text-body-secondary">作者: {{ item.author }}</small>
+                        <small class="text-body-secondary">id: {{ item.id }}</small>
+                    </div>
+                    <div class="mt-2">
+                        <a type="button" target="_blank"
+                           class="btn btn-sm btn-outline-secondary"
+                           :href="item.original">
+                            查看原图
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4 px-3 mx-auto">
+        <button type="button"
+                onclick="document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;"
+                class="btn btn-secondary float-start"
+                :disabled="navigation.select===1"
+                @click="navigation.select=Math.max(navigation.select-1,1);search();">
+            上一页
+        </button>
+        <button type="button"
+                onclick="document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;"
+                :disabled="navigation.select===Math.ceil(navigation.counts / 8)"
+                class="btn btn-secondary float-end"
+                @click="navigation.select=Math.min(navigation.select+1,Math.ceil(navigation.counts / 8));search();">
+            下一页
+        </button>
+    </div>
+</div>
+<script type="module" src="/src/searcher.ts"></script>
+</body>
+</html>

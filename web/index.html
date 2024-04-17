@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="/favicon.ico" rel="icon"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Pixiv 数据库管理</title>
+</head>
+<body>
+<div id="app" class="text-center w-100 p-0">
+    <div class="container py-4 px-3 mx-auto">
+        <h1>Pixiv Database Manager</h1>
+    </div>
+    <div class="container py-4 px-3 mx-auto clearfix">
+        <a class="ms-auto btn btn-outline-success float-end" href="searcher.html" type="button">
+            搜索器
+        </a>
+    </div>
+    <div class="container row m-auto p-0">
+        <div class="col-xl-6 col-lg-12 p-2">
+            <div class="card text-start h-100 p-3">
+                <div class="card-header bg-transparent">
+                    <h4 class="card-title">全局统计</h4>
+                </div>
+                <div class="card-body">
+                <span class="badge align-items-center text-bg-secondary rounded-pill fs-6 m-2">
+                    共计 <span class="text-info">
+                    {{ statistics.totalIllustrationCount }}
+                </span> 张插画
+                </span>
+                    <span class="badge align-items-center text-bg-secondary rounded-pill fs-6 m-2">
+                    共关注 <span class="text-info">
+                        {{ statistics.followArtistCount }}
+                    </span> 名画师
+                </span>
+                    <span class="badge align-items-center text-bg-secondary rounded-pill fs-6 m-2">
+                    共消耗 <span class="text-info">
+                        {{ formatBytes(statistics.cumulativeTrafficConsumption) }}
+                    </span> 流量
+                </span>
+                    <span class="badge align-items-center text-bg-secondary rounded-pill fs-6 m-2">
+                    共同步 <span class="text-info">
+                        {{ statistics.synchronousCount }}
+                    </span> 次
+                </span>
+                    <span class="badge align-items-center text-bg-secondary rounded-pill fs-6 m-2">
+                    距上次同步 <span class="text-info">
+                        {{ formatTimestamp(getCurrentTimestamp() - statistics.lastSynchronousTimestamp) }}
+                    </span>
+                </span>
+                    <span class="badge align-items-center text-bg-secondary rounded-pill fs-6 m-2">
+                    下载失败 <span class="text-info">
+                        {{ statistics.synchronousCount }}
+                    </span> 次
+                </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-12 p-2">
+            <div class="card text-start h-100 p-3">
+                <div class="card-header row d-flex bg-transparent">
+                    <h4 class="card-title col-auto me-2 my-auto">同步</h4>
+                    <span class="badge text-bg-secondary col-auto m-auto me-3">
+                        10m 2s
+                    </span>
+                    <div class="col-md col-sm-12 text-center m-auto mt-2">
+                        <div aria-label="Animated striped example" aria-valuemax="100" aria-valuemin="0"
+                             aria-valuenow="75"
+                             class="progress" role="progressbar">
+                            <div class="progress-bar bg-secondary progress-bar-striped progress-bar-animated"
+                                 style="width: 75%">
+                                75%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mt-3">
+                        <div class="col-12 col-sm-4 my-2 text-center">
+                            <button class="btn btn-primary text-light">同步画师</button>
+                        </div>
+                        <div class="col-12 col-sm-4 my-2 text-center">
+                            <button class="btn btn-info text-light">同步插画</button>
+                        </div>
+                        <div class="col-12 col-sm-4 my-2 text-center">
+                            <button class="btn btn-warning text-light">同步下载</button>
+                        </div>
+                        <button class="btn btn-success mt-4 text-light">一件三连</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6 col-lg-12 p-2">
+            <div class="card text-start h-100 p-3">
+                <div class="card-header bg-transparent">
+                    <h4 class="card-title">日志</h4>
+                </div>
+                <div class="card-body">
+                    <div class="overflow-y-scroll border-1 border-secondary border rounded-1" style="height: 300px">
+                        <ul class="list-group">
+                            <li class="list-group-item">An item</li>
+                            <li class="list-group-item">A second item</li>
+                            <li class="list-group-item">A third item</li>
+                            <li class="list-group-item">A fourth item</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                            <li class="list-group-item">And a fifth one</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 p-2">
+            <div class="card text-start h-100 p-3">
+                <div class="card-header row d-flex bg-transparent">
+                    <h4 class="card-title col-auto me-2 my-auto">管理</h4>
+                    <div id="list-tab" class="list-group list-group-horizontal col-12 col-sm my-auto p-0"
+                         role="tablist">
+                        <a class="list-group-item list-group-item-action text-center px-1 active"
+                           data-bs-toggle="list" href="#setting-account" role="tab">
+                            账号
+                        </a>
+                        <a class="list-group-item list-group-item-action text-center px-1"
+                           data-bs-toggle="list" href="#setting-config" role="tab">
+                            设置
+                        </a>
+                        <a class="list-group-item list-group-item-action text-center px-1 disabled"
+                           data-bs-toggle="list" href="#setting-schedule-tasks" role="tab">
+                            自动化
+                        </a>
+                        <a class="list-group-item list-group-item-action text-center px-1"
+                           data-bs-toggle="list" href="#setting-about" role="tab">
+                            关于
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="nav-tabContent" class="tab-content">
+                        <div id="setting-account" aria-labelledby="list-home-list"
+                             class="tab-pane fade text-center"
+                             role="tabpanel">
+                            <div class="d-flex mb-3">
+                                <div class="h5 my-auto">账号列表</div>
+                                <button class="btn btn-sm btn-success my-auto ms-auto"
+                                        data-bs-target="#accountLoginModal"
+                                        data-bs-toggle="modal">增加账号
+                                </button>
+                                <!--账号登录模态框-->
+                                <div id="accountLoginModal" aria-hidden="true" class="modal fade" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5">登录Pixiv账号</h1>
+                                                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                                        type="button"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <nav>
+                                                    <div id="login-refresh-token-tab" class="nav nav-tabs "
+                                                         role="tablist">
+                                                        <button id="nav-home-tab" aria-controls="login-refresh-token"
+                                                                aria-selected="true"
+                                                                class="nav-link active"
+                                                                data-bs-target="#login-refresh-token"
+                                                                data-bs-toggle="tab"
+                                                                role="tab"
+                                                                type="button">
+                                                            刷新令牌
+                                                        </button>
+                                                        <button id="login-web-tab" aria-controls="login-web"
+                                                                aria-selected="false" class="nav-link"
+                                                                data-bs-target="#login-web" data-bs-toggle="tab"
+                                                                role="tab"
+                                                                type="button">
+                                                            跳转登录
+                                                        </button>
+                                                    </div>
+                                                </nav>
+                                                <div id="nav-tabContent" class="tab-content text-start">
+                                                    <div id="login-refresh-token"
+                                                         aria-labelledby="login-refresh-token-tab"
+                                                         class="tab-pane fade show active"
+                                                         role="tabpanel" tabindex="0">
+
+                                                        <div class="input-group has-validation mt-4">
+                                                            <div :class="{'is-invalid':login.tokenValueError!==''}"
+                                                                 class="form-floating">
+                                                                <input v-model="login.tokenValue"
+                                                                       :class="{'is-invalid':login.tokenValueError!==''}"
+                                                                       class="form-control"
+                                                                       placeholder="Token / JSON"
+                                                                       type="text">
+                                                                <label for="floatingInputInvalid">Token / JSON</label>
+                                                            </div>
+                                                            <div class="invalid-feedback">
+                                                                {{ login.tokenValueError }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-end mt-4">
+                                                            <button class="btn btn-success"
+                                                                    @click="addAccountWithToken()">登录
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="login-web" aria-labelledby="login-web-tab"
+                                                         class="tab-pane fade"
+                                                         role="tabpanel" tabindex="0">
+                                                        <a :href="login.webLoginUrl" class="btn btn-primary col-12 mt-4"
+                                                           target="_blank"
+                                                           type="button">
+                                                            跳转
+                                                        </a>
+                                                        <div class="input-group has-validation mt-4">
+                                                            <div :class="{'is-invalid':login.codeValueError!==''}"
+                                                                 class="form-floating">
+                                                                <input v-model="login.codeValue"
+                                                                       :class="{'is-invalid':login.codeValueError!==''}"
+                                                                       class="form-control"
+                                                                       placeholder="Token / JSON"
+                                                                       type="text">
+                                                                <label for="floatingInputInvalid">Code / URI</label>
+                                                            </div>
+                                                            <div class="invalid-feedback">
+                                                                {{ login.codeValueError }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-end mt-4">
+                                                            <button class="btn btn-success"
+                                                                    @click="addAccountWithCode()">登录
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="list-group align-items-center  border-1 border-secondary border rounded-1">
+                                <li v-show="accounts.length===0" class="list-group-item list-group-item-action">
+                                    暂无账号
+                                </li>
+                                <li v-for="item in accounts" class="list-group-item list-group-item-action"
+                                    data-bs-target="#accountInfoModal"
+                                    data-bs-toggle="modal"
+                                    @click="showAccount=item">
+                                    {{ item.name }}
+                                    <pre class="text-black-50 m-0">{{ item.mail_address }}</pre>
+                                </li>
+                                <!--账号信息模态框-->
+                                <div id="accountInfoModal" aria-hidden="true" class="modal fade" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5">账号信息</h1>
+                                                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                                                        type="button"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h3>{{ showAccount.name }}</h3>
+
+                                                <div class="input-group input-group-sm mb-3">
+                                                    <span id="inputGroup-sizing-sm" class="input-group-text">账号</span>
+                                                    <span class="form-control">
+                                                        {{ showAccount.account }}
+                                                    </span>
+                                                </div>
+                                                <div class="input-group input-group-sm mb-3">
+                                                    <span id="inputGroup-sizing-sm" class="input-group-text">邮箱</span>
+                                                    <span class="form-control">
+                                                        {{ showAccount.mail_address }}
+                                                    </span>
+                                                </div>
+                                                <div class="input-group input-group-sm mb-3 col-auto">
+                                                    <span id="inputGroup-sizing-sm" class="input-group-text">pid</span>
+                                                    <span class="form-control">
+                                                        {{ showAccount.id }}
+                                                    </span>
+                                                </div>
+
+                                                <div class="input-group input-group-sm mb-3">
+                                                    <label class="form-control"
+                                                           for="sync_following">同步关注画师</label>
+                                                    <div class="input-group-text">
+                                                        <input id="sync_following"
+                                                               v-model="showAccount.sync_following"
+                                                               class="form-check-input mt-0"
+                                                               type="checkbox">
+                                                    </div>
+                                                </div>
+
+                                                <div class="input-group input-group-sm mb-3">
+                                                    <label class="form-control" for="sync_favorite">同步收藏插画</label>
+                                                    <div class="input-group-text">
+                                                        <input id="sync_favorite"
+                                                               v-model="showAccount.sync_favorite"
+                                                               class="form-check-input mt-0"
+                                                               type="checkbox">
+                                                    </div>
+                                                </div>
+                                                <div class="input-group input-group-sm mb-3">
+                                                    <label class="form-control"
+                                                           for="participate_in_downloads">参与资源下载</label>
+                                                    <div class="input-group-text">
+                                                        <input id="participate_in_downloads"
+                                                               v-model="showAccount.participate_in_downloads"
+                                                               class="form-check-input mt-0"
+                                                               type="checkbox">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button aria-label="Close" class="btn btn-danger"
+                                                        data-bs-dismiss="modal" @click="deleteAccount(showAccount.id)">
+                                                    删除
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ul>
+                        </div>
+                        <div id="setting-config" aria-labelledby="list-profile-list"
+                             class="tab-pane fade text-center show active"
+                             role="tabpanel">
+                            <div class="row">
+                                <div class="col-12 col-lg-6 p-1">
+                                    <div class="card text-start h-100">
+                                        <div class="h5 mb-3">配置</div>
+                                        <div class="input-group">
+                                            <div class="form-floating">
+                                                <input v-model="config.database_connection_string"
+                                                       class="form-control is-invalid" placeholder="" type="text">
+                                                <label for="floatingInputGroup2">数据库地址</label>
+                                            </div>
+                                            <button class="btn btn-outline-success"
+                                                    type="button"
+                                                    @click="setConfig('database_connection_string',config.database_connection_string)">
+                                                修改
+                                            </button>
+
+                                        </div>
+                                        <div class="input-group mt-3">
+                                            <div class="form-floating">
+                                                <select v-model="setting.work_database_name" class="form-select">
+                                                    <option :selected="config.work_database_name===''" disabled
+                                                            value="">
+                                                        未设置
+                                                    </option>
+                                                    <option v-for="item in database.available"
+                                                            :selected="config.work_database_name===item" :value="item">
+                                                        {{ item }}
+                                                    </option>
+                                                </select>
+                                                <label for="floatingSelect">工作数据库</label>
+                                            </div>
+                                            <button class="btn btn-outline-success" type="button"
+                                                    @click="setConfig('work_database_name',setting.work_database_name)">
+                                                修改
+                                            </button>
+                                        </div>
+                                        <div class="input-group mt-3">
+                                            <span class="input-group-text">仓储库</span>
+                                            <div class="form-floating">
+                                                <input v-model="config.repository_path" class="form-control"
+                                                       placeholder=""
+                                                       type="text">
+                                                <label for="floatingInputGroup2">存储路径</label>
+                                            </div>
+                                            <button class="btn btn-outline-success" type="button"
+                                                    @click="setConfig('repository_path',config.repository_path)">修改
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6 p-1">
+                                    <div class="card text-start h-100">
+                                        <div class="h5 mb-3">数据库</div>
+                                        <div class="input-group mt-3">
+                                            <div class="form-floating">
+                                                <input v-model="setting.database.name" class="form-control"
+                                                       list="datalistOptions"
+                                                       placeholder="" type="text">
+                                                <label for="floatingInputGroup2">数据库名称</label>
+                                                <datalist id="datalistOptions">
+                                                    <option v-for="item in database.available" :value="item">
+                                                </datalist>
+                                            </div>
+                                            <button v-if="!setting.database.existence" class="btn btn-primary"
+                                                    type="button" @click="createDatabase(setting.database.name)">
+                                                创建
+                                            </button>
+                                            <button v-if="setting.database.existence"
+                                                    class="btn btn-danger"
+                                                    type="button" @click="deleteDatabase(setting.database.name)">
+                                                删除
+                                            </button>
+                                        </div>
+                                        <!--   <hr class="my-6">
+                                                                           <div class="h5 mb-3">仓储库</div>
+                                                                               <div class="input-group mt-3">
+                                                                                   <button class="btn btn-warning" type="button">重建索引</button>
+                                                                                   <button class="btn btn-danger" type="button">删除</button>
+                                                                               </div>-->
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div id="setting-schedule-tasks" aria-labelledby="list-messages-list"
+                             class="tab-pane fade text-center"
+                             role="tabpanel">
+                            <div>还没做呢</div>
+                        </div>
+                        <div id="setting-about" aria-labelledby="list-settings-list"
+                             class="tab-pane fade text-center"
+                             role="tabpanel">
+                            <h5 class="mt-3">项目</h5>
+                            <a href="https://github.com/zedoCN/PixivSyncDownloader">
+                                <i class="fa-solid fa-book-bookmark"></i> PixivSyncDownloader
+                            </a>
+                            <h5 class="mt-3">zedo</h5>
+                            <a class="m-2" href="https://qm.qq.com/q/vCafsUPFPq">
+                                <i class="fa-brands fa-qq"></i>QQ
+                            </a>
+                            <a class="m-2" href="https://github.com/zedoCN">
+                                <i class="fa-brands fa-github"></i> GitHub
+                            </a>
+                            <h5 class="mt-3">致谢</h5>
+                            <a class="m-2" href="https://github.com/CeuiLiSA/Pixiv-Shaft">
+                                <i class="fa-brands fa-github"></i>
+                                Pixiv-Shaft</a>
+                            <a class="m-2" href="https://github.com/upbit/pixivpy">
+                                <i class="fa-brands fa-github"></i>
+                                pixivpy</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="messageToast" aria-atomic="true" aria-live="assertive" class="toast" role="alert">
+            <div class="toast-header">
+                <i :class="messageToast.icon" class="me-2"></i>
+                <strong class="me-auto">{{ messageToast.title }}</strong>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="toast" type="button"></button>
+            </div>
+            <div class="toast-body">
+                {{ messageToast.message }}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/src/index.ts" type="module"></script>
+</body>
+</html>

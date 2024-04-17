@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="brotli.dec" type="repository">
+    <properties maven-id="org.brotli:dec:0.1.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/brotli/dec/0.1.2/dec-0.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/brotli/dec/0.1.2/dec-0.1.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/brotli/dec/0.1.2/dec-0.1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
