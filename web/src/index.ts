@@ -5,7 +5,7 @@ import '@popperjs/core/dist/umd/popper.min.js'
 import {
     AccountInfo,
     addAccountWithCode,
-    addAccountWithToken, ConfigInfo, DatabaseInfo,
+    addAccountWithToken, checkAccount, ConfigInfo, DatabaseInfo,
     deleteAccount,
     getAccounts, getConfigInfo, getDatabaseInfo,
     getWebLoginUrl, Result, setAccountAttribute, setConfig, setDatabase
@@ -69,8 +69,14 @@ const app = createApp({
                 this.accounts = data;
             })
         },
-        refreshDatabase() {
-            getDatabaseInfo().then((data) => {
+        refreshDatabase(): Promise<void> {
+            return getDatabaseInfo().then((data) => {
+                if (!data.result) {
+                    this.showResultMessage({
+                        result: true,
+                        message: data.message,
+                    })
+                }
                 this.database = data;
                 this.setting.database.existence = this.database.all.includes(this.setting.database.name)
                 this.setting.database.available = this.database.available.includes(this.setting.database.name)
@@ -102,6 +108,11 @@ const app = createApp({
                 this.refreshAccounts()
             })
         },
+        checkAccount() {
+            checkAccount(this.showAccount.id).then((data) => {
+                this.showResultMessage(data)
+            })
+        },
         refreshWebLogin() {
             getWebLoginUrl().then((data) => {
                 this.login.webLoginUrl = data.message
@@ -113,6 +124,8 @@ const app = createApp({
                 if (!this.database.available.includes(this.config.work_database_name)) {
                     this.config.work_database_name = ''
                 }
+                this.setting.work_database_name = this.config.work_database_name
+                this.setting.thread_count_index = this.setting.thread_count_range.indexOf(this.config.thread_count);
             })
         },
         showResultMessage(message: Result) {
@@ -136,8 +149,9 @@ const app = createApp({
             setConfig(type, value).then((data) => {
                 this.showResultMessage(data)
                 if (data.result) {
-                    this.refreshDatabase()
-                    this.refreshConfig()
+                    this.refreshDatabase().then(() => {
+                        this.refreshConfig()
+                    })
                 }
             })
         },
@@ -210,10 +224,14 @@ const app = createApp({
             this.setting.database.existence = this.database.all.includes(value)
             this.setting.database.available = this.database.available.includes(value)
         })
+        watch(() => this.setting.thread_count_index, (value) => {
+            setConfig('thread_count', this.setting.thread_count_range[value])
+        })
         this.refreshAccounts()
         this.refreshWebLogin()
-        this.refreshDatabase()
-        this.refreshConfig()
+        this.refreshDatabase().then(() => {
+            this.refreshConfig()
+        })
     },
     data() {
 
@@ -225,7 +243,11 @@ const app = createApp({
                     existence: false,
                     available: false
                 },
-                work_database_name: ''
+                work_database_name: '',
+                thread_count_index: 0,
+                thread_count_range: [
+                    1, 2, 4, 8, 16, 32, 64, 128
+                ]
             },
             statistics: {
                 totalIllustrationCount: 100,

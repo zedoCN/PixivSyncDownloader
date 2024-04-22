@@ -20,6 +20,7 @@ public class ConfigServlet extends HttpServlet {
         rootObject.addProperty("database_connection_string", Config.DATA.databaseConnectionString);
         rootObject.addProperty("work_database_name", Config.DATA.workDatabaseName);
         rootObject.addProperty("repository_path", Config.DATA.repositoryPath);
+        rootObject.addProperty("thread_count", Config.DATA.threadCount);
 
         resp.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json");
@@ -44,7 +45,11 @@ public class ConfigServlet extends HttpServlet {
                 case "repository_path" -> {
                     Path path = Path.of(value);
                     if (!Files.exists(path))
-                        throw new RuntimeException("仓储库目录不存在！");
+                        Files.createDirectories(path);
+                }
+                case "thread_count" -> {
+                    Config.DATA.threadCount = Integer.parseInt(value);
+                    Config.save();
                 }
             }
         } catch (Exception e) {

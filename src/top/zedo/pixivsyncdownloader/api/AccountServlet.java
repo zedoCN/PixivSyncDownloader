@@ -107,21 +107,44 @@ public class AccountServlet extends HttpServlet {
 
                 }
             }
+            case "check"->{
+                long id = Long.parseLong(Objects.requireNonNull(req.getParameter("id")));
+                pixivAPI.setRefreshToken(Config.DATA.accountList.get(id).response.refresh_token);
+                RetryableTask task = new RetryableTask(5, 500) {
+                    @Override
+                    protected void runTask() {
+                        PixivData.Auth auth = pixivAPI.auth();
+                        //直接覆盖，就当更新账号信息
+                        Config.DATA.accountList.put(auth.user.id, auth);
+                        rootObject.addProperty("result", true);
+                        rootObject.addProperty("message", "可以登录。");
+                    }
+
+                    @Override
+                    protected void retry(int retries, Exception e) {
+                        System.err.println("重试: " + retries);
+                    }
+
+                    @Override
+                    protected void failed(Exception e) {
+                        rootObject.addProperty("result", false);
+                        rootObject.addProperty("message", "无法登录！");
+                    }
+                };
+                task.run();
+            }
         }
 
         if (isLogin) {
             RetryableTask task = new RetryableTask(5, 500) {
                 @Override
                 protected void runTask() {
-                    System.out.println("尝试登录");
                     PixivData.Auth auth = pixivAPI.auth();
-                    System.out.println("登录成功");
                     boolean contained = Config.DATA.accountList.containsKey(auth.user.id);
                     //直接覆盖，就当更新账号信息
                     Config.DATA.accountList.put(auth.user.id, auth);
                     rootObject.addProperty("result", !contained);
                     if (contained) {
-                        System.err.println("账号重复登录");
                         rootObject.addProperty("message", "已有此账号！");
                     } else {
                         rootObject.addProperty("message", "添加成功。");
@@ -137,7 +160,6 @@ public class AccountServlet extends HttpServlet {
                 protected void failed(Exception e) {
                     rootObject.addProperty("result", false);
                     rootObject.addProperty("message", "无法登录！");
-                    System.err.println("登录失败");
                 }
             };
             task.run();

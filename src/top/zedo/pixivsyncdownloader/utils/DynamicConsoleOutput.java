@@ -5,7 +5,6 @@ package top.zedo.pixivsyncdownloader.utils;
  */
 public class DynamicConsoleOutput {
     private final StringBuilder sb = new StringBuilder();
-    private int length = 0;
 
     /**
      * 获取StringBuilder
@@ -52,10 +51,13 @@ public class DynamicConsoleOutput {
     }
 
     /**
-     * 更新输出
+     * 更新控制台输出
      */
     public void update() {
-        sb.insert(0, "\b".repeat(sb.length() + 2));
+        // or \b  + "\u001B[1K"  \u0008
+        //sb.insert(0, "\b".repeat(sb.length()) );
+        //sb.insert(0, "\u001B2J");
+        sb.insert(0, "\u0008".repeat(sb.length() * 4));
         System.out.print(sb);
         clear();
     }

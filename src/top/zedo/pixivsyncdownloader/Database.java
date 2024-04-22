@@ -31,7 +31,7 @@ public class Database {
         changeDatabase(null);
         System.out.println("数据库连接成功");
     }
-
+    
     public static void changeDatabase(String name) {
         if (name != null) {
             Config.DATA.workDatabaseName = name;

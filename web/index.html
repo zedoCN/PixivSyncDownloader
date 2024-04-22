@@ -318,7 +318,15 @@
                                                 </div>
                                             </div>
                                             <div class="modal-footer">
-                                                <button aria-label="Close" class="btn btn-danger"
+                                                <a :href="'https://www.pixiv.net/users/'+showAccount.id"
+                                                   class="btn btn-primary" target="_blank">
+                                                    跳转
+                                                </a>
+                                                <button class="btn btn-success"
+                                                        @click="checkAccount(showAccount.id)">
+                                                    验证
+                                                </button>
+                                                <button aria-label="Close" class="btn btn-danger ms-auto"
                                                         data-bs-dismiss="modal" @click="deleteAccount(showAccount.id)">
                                                     删除
                                                 </button>
@@ -338,8 +346,8 @@
                                         <div class="input-group">
                                             <div class="form-floating">
                                                 <input v-model="config.database_connection_string"
-                                                       class="form-control is-invalid" placeholder="" type="text">
-                                                <label for="floatingInputGroup2">数据库地址</label>
+                                                       class="form-control" placeholder="" type="text">
+                                                <label>数据库地址</label>
                                             </div>
                                             <button class="btn btn-outline-success"
                                                     type="button"
@@ -351,16 +359,16 @@
                                         <div class="input-group mt-3">
                                             <div class="form-floating">
                                                 <select v-model="setting.work_database_name" class="form-select">
-                                                    <option :selected="config.work_database_name===''" disabled
+                                                    <option v-if="config.work_database_name==''" disabled
                                                             value="">
                                                         未设置
                                                     </option>
                                                     <option v-for="item in database.available"
-                                                            :selected="config.work_database_name===item" :value="item">
+                                                            :value="item">
                                                         {{ item }}
                                                     </option>
                                                 </select>
-                                                <label for="floatingSelect">工作数据库</label>
+                                                <label>工作数据库</label>
                                             </div>
                                             <button class="btn btn-outline-success" type="button"
                                                     @click="setConfig('work_database_name',setting.work_database_name)">
@@ -373,7 +381,7 @@
                                                 <input v-model="config.repository_path" class="form-control"
                                                        placeholder=""
                                                        type="text">
-                                                <label for="floatingInputGroup2">存储路径</label>
+                                                <label>存储路径</label>
                                             </div>
                                             <button class="btn btn-outline-success" type="button"
                                                     @click="setConfig('repository_path',config.repository_path)">修改
@@ -389,7 +397,7 @@
                                                 <input v-model="setting.database.name" class="form-control"
                                                        list="datalistOptions"
                                                        placeholder="" type="text">
-                                                <label for="floatingInputGroup2">数据库名称</label>
+                                                <label>数据库名称</label>
                                                 <datalist id="datalistOptions">
                                                     <option v-for="item in database.available" :value="item">
                                                 </datalist>
@@ -412,6 +420,25 @@
                                                                                </div>-->
                                     </div>
                                 </div>
+                                <div class="col-12 col-lg-6 p-1">
+                                    <div class="card text-start h-100">
+                                        <div class="h5 mb-3">下载</div>
+                                        <div class="input-group mt-3">
+                                            <span class="input-group-text">多线程数</span>
+                                            <div class="form-floating">
+                                                <input id="customRange2" v-model="setting.thread_count_index"
+                                                       :max="setting.thread_count_range.length-1"
+                                                       class="form-range form-control"
+                                                       min="0" type="range">
+                                                <label>{{
+                                                        setting.thread_count_range[setting.thread_count_index]
+                                                    }}</label>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -424,21 +451,21 @@
                              class="tab-pane fade text-center"
                              role="tabpanel">
                             <h5 class="mt-3">项目</h5>
-                            <a href="https://github.com/zedoCN/PixivSyncDownloader">
+                            <a href="https://github.com/zedoCN/PixivSyncDownloader" target="_blank">
                                 <i class="fa-solid fa-book-bookmark"></i> PixivSyncDownloader
                             </a>
                             <h5 class="mt-3">zedo</h5>
-                            <a class="m-2" href="https://qm.qq.com/q/vCafsUPFPq">
-                                <i class="fa-brands fa-qq"></i>QQ
+                            <a class="m-2" href="https://qm.qq.com/q/vCafsUPFPq" target="_blank">
+                                <i class="fa-brands fa-qq"></i> QQ
                             </a>
-                            <a class="m-2" href="https://github.com/zedoCN">
+                            <a class="m-2" href="https://github.com/zedoCN" target="_blank">
                                 <i class="fa-brands fa-github"></i> GitHub
                             </a>
                             <h5 class="mt-3">致谢</h5>
-                            <a class="m-2" href="https://github.com/CeuiLiSA/Pixiv-Shaft">
+                            <a class="m-2" href="https://github.com/CeuiLiSA/Pixiv-Shaft" target="_blank">
                                 <i class="fa-brands fa-github"></i>
                                 Pixiv-Shaft</a>
-                            <a class="m-2" href="https://github.com/upbit/pixivpy">
+                            <a class="m-2" href="https://github.com/upbit/pixivpy" target="_blank">
                                 <i class="fa-brands fa-github"></i>
                                 pixivpy</a>
 

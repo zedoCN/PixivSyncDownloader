@@ -23,13 +23,19 @@ public class DatabaseServlet extends HttpServlet {
         JsonArray availableDbs = new JsonArray();
         JsonArray allDbs = new JsonArray();
 
-        for (var dbName : Database.mongoClient.listDatabaseNames()) {
-            MongoDatabase db = Database.mongoClient.getDatabase(dbName);
-            if (!dbName.equals("admin") && !dbName.equals("config") && !dbName.equals("local")) {
-                allDbs.add(dbName);
-                if (db.listCollectionNames().into(new ArrayList<>()).contains("pixiv"))
-                    availableDbs.add(dbName);
+        rootObject.addProperty("result", true);
+        try {
+            for (var dbName : Database.mongoClient.listDatabaseNames()) {
+                MongoDatabase db = Database.mongoClient.getDatabase(dbName);
+                if (!dbName.equals("admin") && !dbName.equals("config") && !dbName.equals("local")) {
+                    allDbs.add(dbName);
+                    if (db.listCollectionNames().into(new ArrayList<>()).contains("pixiv"))
+                        availableDbs.add(dbName);
+                }
             }
+        }catch (Exception e){
+            rootObject.addProperty("result", false);
+            rootObject.addProperty("message", e.getMessage());
         }
 
         rootObject.add("available", availableDbs);

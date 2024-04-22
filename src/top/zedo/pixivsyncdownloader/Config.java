@@ -69,6 +69,10 @@ public class Config {
          * 服务器监听端口
          */
         public int serverPort;
+        /**
+         * 下载线程数
+         */
+        public int threadCount;
 
         public ConfigData() {
             accountList = new HashMap<>();
@@ -79,6 +83,7 @@ public class Config {
             workDatabaseName = "pixiv";
             repositoryPath = "./repository";
             serverPort = 8080;
+            threadCount = 1;
         }
     }
 }

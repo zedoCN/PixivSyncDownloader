@@ -46,7 +46,9 @@ export type AccountInfo = {
 
 export type DatabaseInfo = {
     available: string[]
-    all: string[]
+    all: string[],
+    result: boolean,
+    message: string,
 }
 export const SearchTypeEnums: Map<string, string> = new Map();
 
@@ -113,6 +115,15 @@ export function deleteAccount(id: number) {
     }).then(response => response.data)
 }
 
+export function checkAccount(id: number) {
+    return axios.post('/api/account', {}, {
+        params: {
+            operation: 'check',
+            id: id
+        }
+    }).then(response => response.data)
+}
+
 export function getWebLoginUrl(): Promise<Result> {
     return axios.post('/api/account', {}, {
         params: {
@@ -139,6 +150,7 @@ export type ConfigInfo = {
     database_connection_string: string,
     work_database_name: string,
     repository_path: string,
+    thread_count: number
 }
 
 export function getConfigInfo(): Promise<ConfigInfo> {
